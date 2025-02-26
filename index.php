@@ -1,7 +1,14 @@
 <?php
-define('URL', 'http://localhost/gestorfree');
-error_reporting(E_ALL);
+// public/index.php
 
-date_default_timezone_set(America/New_York);
+require_once 'app/controllers/HomeController.php';
 
+$action = isset($_GET['action']) ? $_GET['action'] : 'index';
 
+$controller = new HomeController();
+
+if (method_exists($controller, $action)) {
+    $controller->$action();
+} else {
+    echo "404 - Página no encontrada";
+}

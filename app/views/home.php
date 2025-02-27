@@ -13,8 +13,25 @@
             display: flex;
             height: 100vh;
             overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
         }
-
+        .dark-mode {
+            background: #2e2e2e;
+            color: white;
+        }
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 100px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .toggle-btn:hover {
+            transform: scale(1.2);
+        }
         .sidebar {
             width: 250px;
             background-color: #F4F5F7;
@@ -130,17 +147,23 @@
     <div class="sidebar">
         <br>
         <a href="#">Tu trabajo</a>
-        <a href="#">Recientes</a>
         <a href="#">Proyectos</a>
-        <a href="#">Filtros</a>
-        <a href="#">Paneles</a>
         <a href="#">Equipos</a>
     </div>
+    <button id="themeToggle" class="toggle-btn">☀️</button>
+    <script>
+        const button = document.getElementById('themeToggle');
+        const body = document.body;
 
+        button.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            button.textContent = body.classList.contains('dark-mode') ? '🌙' : '☀️';
+        });
+    </script>
     <div class="main-content">
         <div class="header">
             <h1>Proyectos</h1>
-            <a href="#" class="btn-create">Crear proyecto</a>
+            <a href="proyecto.php" class="btn-create">Crear proyecto</a>
         </div>
 
         <table class="project-table">

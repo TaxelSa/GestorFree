@@ -4,7 +4,7 @@
 class HomeController {
     public function index() {
         // Lógica para la página de inicio
-        require_once 'app/views/home.php';
+        require_once 'app/views/login.php';
     }
 
     public function about() {

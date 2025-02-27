@@ -1,27 +1,28 @@
-<!-- app/views/home.php -->
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Gestor de Proyectos</title>
-    <link rel="stylesheet" href="/assets/css/styles.css">
+    <title>Login</title>
 </head>
 <body>
-    <div class="container">
-        <div class="login-box">
-            <h2>Gestor de Proyectos</h2>
-            <form action="/controllers/login.php" method="POST">
-                <label for="usuario">Usuario:</label>
-                <input type="text" id="usuario" name="usuario" placeholder="Ingrese su usuario" required>
+    <h2>Iniciar Sesión</h2>
+    
+    <?php if (isset($_SESSION['error'])): ?>
+        <p style="color: red;"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></p>
+    <?php endif; ?>
 
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+    <form action="/GestorFree/app/controllers/login.php" method="POST">
 
-                <button type="submit">Iniciar Sesión</button>
-            </form>
-            <p>¿No tienes una cuenta? <a href="registro.php">Regístrate aquí</a></p>
-        </div>
-    </div>
+        <label for="numero_control">Número de Control:</label>
+        <input type="text" name="numero_control" required>
+
+        <label for="password">Contraseña:</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Iniciar Sesión</button>
+    </form>
 </body>
 </html>
+

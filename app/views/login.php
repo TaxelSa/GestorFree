@@ -67,7 +67,7 @@
 <body>
     <div class="container">
 
-        <img src="../img/ito-logo.jpeg" alt="Logo ITO" class="logo">
+        <img src="/GestorFree/app/img/ito-logo.jpg" alt="Logo-ITO" class="logo" class="logo">
         
         <h2>Iniciar Sesión</h2>
         

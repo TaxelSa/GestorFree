@@ -1,3 +1,16 @@
+
+<?php
+// Incluir el controlador y la conexión
+require_once '../controllers/ProyectoController.php';
+require_once '../models/proyectomodel.php';
+
+// Crear una instancia del controlador
+$proyectosController = new ProyectosController($pdo);
+
+// Obtener los proyectos
+$proyectos = $proyectosController->obtenerProyectos();
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -139,6 +152,37 @@
             .main-content.shifted {
                 margin-left: 0;
             }
+
+
+            .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            margin: 100px auto;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
         }
     </style>
 </head>
@@ -163,39 +207,57 @@
     <div class="main-content">
         <div class="header">
             <h1>Proyectos</h1>
-            <a href="proyecto.php" class="btn-create">Crear proyecto</a>
-        </div>
+            <a href="#" class="btn-create" id="openModal">Crear proyecto</a>
+            </div>
 
         <table class="project-table">
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Clave</th>
+                    <th>Descripcion</th>
                     <th>Tipo</th>
                     <th>Responsable</th>
                 </tr>
             </thead>
             <tbody>
+            <?php if (count($proyectos) > 0): ?>
+                <?php foreach ($proyectos as $proyecto): ?>
+                    <tr>
+                        <td><a href="proyecto.php"><?= htmlspecialchars($proyecto['nombre_proyecto']) ?></a></td>
+                        <td><?= htmlspecialchars($proyecto['descripcion']) ?></td>
+                        
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
                 <tr>
-                    <td><a href="#">eq8</a></td>
-                    <td>EQ8</td>
-                    <td>Software gestionado por el equipo</td>
-                    <td>Sánchez Salvador Axel</td>
+                    <td colspan="4">No hay proyectos disponibles.</td>
                 </tr>
-                <tr>
-                    <td><a href="#">TEEBRARY</a></td>
-                    <td>TEEB</td>
-                    <td>Software gestionado por el equipo</td>
-                    <td>Sánchez Salvador Axel</td>
-                </tr>
-                <tr>
-                    <td><a href="#">TEEMOFAST</a></td>
-                    <td>SCRUM</td>
-                    <td>Software gestionado por el equipo</td>
-                    <td>Alan Emmanuel Arias Rodriguez</td>
-                </tr>
+            <?php endif; ?>
             </tbody>
         </table>
+    </div>
+
+    <!-- Modal de Registro de Proyecto -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Registrar Nuevo Proyecto</h2>
+            <form action="../controllers/ProyectoController.php" method="POST">
+                <label for="nombre">Nombre del Proyecto:</label>
+                <input type="text" name="nombre" id="nombre" required><br><br>
+
+                <label for="descripcion">Descripción:</label>
+                <textarea name="descripcion" id="descripcion" required></textarea><br><br>
+
+                <label for="tipo">Tipo:</label>
+                <input type="text" name="tipo" id="tipo" required><br><br>
+
+                <label for="responsable">Responsable:</label>
+                <input type="text" name="responsable" id="responsable" required><br><br>
+
+                <button type="submit" name="registrar">Registrar Proyecto</button>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -206,5 +268,23 @@
             });
         });
     </script>
+
+<script>
+        // Lógica para abrir y cerrar el modal
+        $(document).ready(function() {
+            $('#openModal').click(function() {
+                $('#projectModal').fadeIn();
+            });
+
+            $('#closeModal').click(function() {
+                $('#projectModal').fadeOut();
+            });
+
+            $('.toggle-menu').click(function() {
+                $('.sidebar').toggleClass('active');
+            });
+        });
+    </script>
+
 </body>
 </html>

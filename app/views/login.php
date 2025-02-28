@@ -45,7 +45,7 @@
             font-size: 1rem;
         }
         button {
-            background: #007bff;
+            background: #EFB036;
             color: white;
             padding: 10px;
             border: none;

@@ -13,8 +13,7 @@ require_once "../models/conexionBD.php";
             if ($datos=$sql->fetch_object()) {
             header("Location: ../views/home.php");
             } else {
-                echo '<script>alert("Acceso Denegado");</script>';
-
+                header("Location: ../views/login.php");
             }
     } 
 ?>

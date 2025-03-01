@@ -191,8 +191,8 @@ $proyectos = $proyectosController->obtenerProyectos();
     <div class="sidebar">
         <br>
         <a href="#">Tu trabajo</a>
-        <a href="#">Proyectos</a>
-        <a href="#">Equipos</a>
+        <a href="proyecto.php">Proyectos</a>
+        <a href="teams.php">Equipos</a>
     </div>
     <button id="themeToggle" class="toggle-btn">☀️</button>
     <script>

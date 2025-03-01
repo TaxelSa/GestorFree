@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
-    <script src="tablero.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -88,6 +87,20 @@
                 $("body").toggleClass("dark-mode");
                 $("#themeToggle").text($("body").hasClass("dark-mode") ? '🌙' : '☀️');
             });
+        
+            $("#tabs").tabs({
+            activate: function(event, ui) {
+                var tabId = ui.newPanel.attr("id"); // Obtiene el ID del tab activo
+                var pageMap = {
+                    
+                    "tabs-2": "cronograma.php",
+                    "tabs-3": "tablero.php",
+                    "tabs-4": "creaTarea.php",
+                    "tabs-5": "configuracionTareas.php"
+                };
+                $("#" + tabId).load(pageMap[tabId]); // Carga el contenido en el div correspondiente
+            }
+        });   
         });
     </script>
 </head>
@@ -95,16 +108,16 @@
     <button class="toggle-btn" id="themeToggle">☀️</button>
     <div class="sidebar">
         <a href="#">Tu trabajo</a>
-        <a href="#">Proyectos</a>
+        <a href="home.php">Proyectos</a>
         <a href="#">Equipos</a>
     </div>
     <div class="main-content">
         <div id="tabs">
             <ul>
                 <li><a href="#tabs-1">Resumen</a></li>
+                <li><a href="#tabs-4">Crea Tarea</a></li>
                 <li><a href="#tabs-2">Cronograma</a></li>
                 <li><a href="#tabs-3">Tablero</a></li>
-                <li><a href="#tabs-4">Informes</a></li>
                 <li><a href="#tabs-5">Configuración</a></li>
             </ul>
             <div id="tabs-1">

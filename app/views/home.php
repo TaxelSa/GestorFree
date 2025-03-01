@@ -90,7 +90,7 @@ $proyectos = $proyectosController->obtenerProyectos();
 
         .project-table th, .project-table td {
             text-align: left;
-            padding: 12px;
+            padding: 10px;
         }
 
         .project-table th {
@@ -127,63 +127,79 @@ $proyectos = $proyectosController->obtenerProyectos();
             left: 20px;
             z-index: 10;
         }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                position: absolute;
-                height: 100vh;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-        }
-
-        @media (min-width: 769px) {
-            .sidebar.collapsed {
-                transform: translateX(-250px);
-            }
-
-            .main-content.shifted {
-                margin-left: 0;
-            }
-
-
-            .modal {
+        /* Estilos para los modales */
+        .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 1;
             left: 0;
-            top: 0;
+            top: 50;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 5px;
+        }
+
+        .modal:target {
+            display: block;
         }
 
         .modal-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 40px;
+            border: 1px solid #888;
             width: 80%;
             max-width: 500px;
-            margin: 100px auto;
-            position: relative;
+            border-radius: 10px;
         }
 
         .close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 24px;
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
             cursor: pointer;
         }
 
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
+
+        form input[type="text"],
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        form button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        form button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+      
     </style>
 </head>
 <body>
@@ -207,25 +223,31 @@ $proyectos = $proyectosController->obtenerProyectos();
     <div class="main-content">
         <div class="header">
             <h1>Proyectos</h1>
-            <a href="#" class="btn-create" id="openModal">Crear proyecto</a>
+            <a href="#crea" class="btn-create">Crear proyecto</a>
             </div>
 
         <table class="project-table">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Nombre</th>
-                    <th>Descripcion</th>
-                    <th>Tipo</th>
-                    <th>Responsable</th>
+                    <th>Descripción</th>
+                    <th>Fecha de entrega</th>
+                    <th>Estado</th>
+                    <th>Estudiante Propietario</th>
                 </tr>
             </thead>
             <tbody>
             <?php if (count($proyectos) > 0): ?>
                 <?php foreach ($proyectos as $proyecto): ?>
                     <tr>
-                        <td><a href="proyecto.php"><?= htmlspecialchars($proyecto['nombre_proyecto']) ?></a></td>
-                        <td><?= htmlspecialchars($proyecto['descripcion']) ?></td>
-                        
+                        <td><?= htmlspecialchars(string: $proyecto['id_proyecto']) ?></td>
+                        <td><a href="proyecto.php"><?=($proyecto['nombre_proyecto']) ?></td>
+                        <td><?= htmlspecialchars($proyecto['descripcion']) ?></a></td>
+                        <td><?= htmlspecialchars($proyecto['fecha_entrega']) ?></td>
+                        <td><?= htmlspecialchars($proyecto['id_estado']) ?></td>
+                        <td><?= htmlspecialchars($proyecto['nombre'] . ' ' . $proyecto['apellido']) ?></td>
+
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -237,54 +259,39 @@ $proyectos = $proyectosController->obtenerProyectos();
         </table>
     </div>
 
-    <!-- Modal de Registro de Proyecto -->
-    <div id="projectModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeModal">&times;</span>
-            <h2>Registrar Nuevo Proyecto</h2>
-            <form action="../controllers/ProyectoController.php" method="POST">
-                <label for="nombre">Nombre del Proyecto:</label>
-                <input type="text" name="nombre" id="nombre" required><br><br>
+    <div id="crea" class="modal">
+            <div class="modal-content">
+                <a href="#" class="close">&times;</a>
+                <h2>Nuevo proyecto</h2>
+                <form id="crearform" action="/GestorFree/app/controllers/insertarProyecto.php" method="POST">
+                    <label for="id_proyecto">ID del Proyecto:</label>
+                    <input type="text" id="id_proyecto" name="id_proyecto" required><br><br>
 
-                <label for="descripcion">Descripción:</label>
-                <textarea name="descripcion" id="descripcion" required></textarea><br><br>
+                    <label for="nombre_proyecto">Nombre del Proyecto:</label>
+                    <input type="text" id="nombre_proyecto" name="nombre_proyecto" required><br><br>
+                    
+                    <label for="descripcion">Describe el Proyecto:</label>
+                    <input type="text" id="descripcion" name="descripcion" required><br><br>
 
-                <label for="tipo">Tipo:</label>
-                <input type="text" name="tipo" id="tipo" required><br><br>
+                    <label for="fecha_entrega">Ingresa fecha</label>
+                    <input type="date" id="fecha_entrega" name="fecha_entrega" required><br><br>
 
-                <label for="responsable">Responsable:</label>
-                <input type="text" name="responsable" id="responsable" required><br><br>
+                    <label for="id_usuario">Ingresa id usuario</label>
+                    <input type="text" id="id_usuario" name="id_usuario" required><br><br>
 
-                <button type="submit" name="registrar">Registrar Proyecto</button>
-            </form>
+                    <label for="id_estado">Ingresa id Estado</label>
+                    <input type="text" id="id_estado" name="id_estado" required><br><br>
+
+                    <label for="id_materia">Ingresa id materia</label>
+                    <input type="text" id="id_materia" name="id_materia" required><br><br>
+
+                    <label for="id_equipo">Ingresa id de equipo</label>
+                    <input type="text" id="id_equipo" name="id_equipo" required><br><br>
+
+                    <button type="submit">Crear Proyecto</button>
+                </form>
+            </div>
         </div>
-    </div>
-
-    <script>
-        $(document).ready(function() {
-            $('.toggle-menu').click(function() {
-                $('.sidebar').toggleClass('active collapsed');
-                $('.main-content').toggleClass('shifted');
-            });
-        });
-    </script>
-
-<script>
-        // Lógica para abrir y cerrar el modal
-        $(document).ready(function() {
-            $('#openModal').click(function() {
-                $('#projectModal').fadeIn();
-            });
-
-            $('#closeModal').click(function() {
-                $('#projectModal').fadeOut();
-            });
-
-            $('.toggle-menu').click(function() {
-                $('.sidebar').toggleClass('active');
-            });
-        });
-    </script>
 
 </body>
 </html>

@@ -1,5 +1,4 @@
 <?php
-// Incluir la conexión PDO
 require_once '../models/proyectomodel.php';
 
 // Definir los estados de las tareas
@@ -10,7 +9,7 @@ $estados = [
     4 => 'Terminado'
 ];
 
-// Asegúrate de que el formulario esté enviando los datos a este archivo.
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_tarea'])) {
     // Imprime los datos recibidos
     var_dump($_POST); // Esto imprimirá todos los datos recibidos por el formulario
@@ -189,7 +188,7 @@ $tareas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             "Estado: " + estado);
         
         // Si el usuario confirma, el formulario se envía, si no, no hace nada
-        return true; // Aquí podrías agregar lógica para validar datos si fuera necesario
+        return true; 
     }
 </script>
 

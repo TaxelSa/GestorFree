@@ -1,5 +1,5 @@
 <?php
-require_once "../models/conexionBD.php"; // Asegúrate de que la ruta sea correcta
+require_once "../models/conexionBD.php"; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recoger los datos del formulario

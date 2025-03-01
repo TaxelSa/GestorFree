@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ejecutar la sentencia
     if ($stmt->execute()) {
         // Redirigir al usuario a la página de gestión de equipos
-        header("Location: ../views/teams.php?success=2"); // Puedes agregar un parámetro para mostrar un mensaje de éxito
+        header("Location: ../views/teams.php?success=2"); 
         exit();
     } else {
         // Redirigir con un mensaje de error

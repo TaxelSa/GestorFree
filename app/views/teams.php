@@ -22,6 +22,42 @@ if (isset($_GET['success'])) {
         default => "Ha ocurrido un error."
     };
 }
+
+// Verificar si se ha solicitado ver los integrantes de un equipo
+$integrantes = [];
+if (isset($_GET['ver_integrantes'])) {
+    $codigoEquipo = $_GET['ver_integrantes'];
+
+    // Consulta SQL para obtener los integrantes
+    $sql = "
+        SELECT 
+            integrante_equipo.codigo_equipo, 
+            integrante_equipo.numero_control, 
+            usuario.nombre, 
+            usuario.apellido 
+        FROM 
+            integrante_equipo 
+        INNER JOIN 
+            usuario 
+        ON 
+            integrante_equipo.numero_control = usuario.numero_control
+        WHERE integrante_equipo.codigo_equipo = ?
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $codigoEquipo);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $integrantes[] = $row;
+        }
+    }
+
+    $stmt->close();
+    $conn->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,6 +67,7 @@ if (isset($_GET['success'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Equipos - Dashboard</title>
     <style>
+        /* Estilos existentes */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -64,55 +101,45 @@ if (isset($_GET['success'])) {
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, width 0.3s ease;
         }
-
         .sidebar h2 {
             font-size: 20px;
             margin-bottom: 30px;
         }
-
         .sidebar a {
             display: block;
             color: #172B4D;
             text-decoration: none;
             padding: 10px 0;
         }
-
         .sidebar a:hover {
             background-color: #DFE1E6;
             border-radius: 5px;
         }
-
         .main-content {
             flex: 1;
             padding: 20px;
             transition: margin-left 0.3s ease;
         }
-
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .teams-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         .teams-table th, .teams-table td {
             text-align: left;
             padding: 12px;
         }
-
         .teams-table th {
             background-color: #EBECF0;
         }
-
         .teams-table tr:nth-child(even) {
             background-color: #FAFBFC;
         }
-
         .btn-create {
             background-color: #EFB036;
             color: white;
@@ -122,11 +149,9 @@ if (isset($_GET['success'])) {
             cursor: pointer;
             text-decoration: none;
         }
-
         .btn-create:hover {
             background-color: #0747A6;
         }
-
         .toggle-menu {
             cursor: pointer;
             padding: 10px;
@@ -139,38 +164,32 @@ if (isset($_GET['success'])) {
             left: 20px;
             z-index: 10;
         }
-
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
                 position: absolute;
                 height: 100vh;
             }
-
             .main-content {
                 margin-left: 0;
             }
-
             #menu-toggle:checked ~ .sidebar {
                 transform: translateX(0);
             }
-
             #menu-toggle:checked ~ .main-content {
                 margin-left: 250px;
             }
         }
-
         @media (min-width: 769px) {
             .sidebar.collapsed {
                 transform: translateX(-250px);
             }
-
             .main-content.shifted {
                 margin-left: 0;
             }
         }
 
-        /* Estilos para los modales */
+        /* Estilos para el modal de integrantes */
         .modal {
             display: none;
             position: fixed;
@@ -183,11 +202,9 @@ if (isset($_GET['success'])) {
             background-color: rgba(0, 0, 0, 0.4);
             padding-top: 60px;
         }
-
         .modal:target {
             display: block;
         }
-
         .modal-content {
             background-color: #fefefe;
             margin: 5% auto;
@@ -197,7 +214,6 @@ if (isset($_GET['success'])) {
             max-width: 500px;
             border-radius: 10px;
         }
-
         .close {
             color: #aaa;
             float: right;
@@ -205,44 +221,12 @@ if (isset($_GET['success'])) {
             font-weight: bold;
             text-decoration: none;
         }
-
         .close:hover,
         .close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
         }
-
-        form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        form input[type="text"],
-        form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        form button[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        form button[type="submit"]:hover {
-            background-color: #218838;
-        }
-
-        /* Estilos para los mensajes */
         .message {
             padding: 15px;
             margin: 20px 0;
@@ -255,19 +239,16 @@ if (isset($_GET['success'])) {
             z-index: 1000;
             animation: slideIn 0.5s ease-out;
         }
-
         .message.success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-
         .message.error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -276,7 +257,6 @@ if (isset($_GET['success'])) {
                 transform: translateX(0);
             }
         }
-
         .close-btn {
             margin-left: 15px;
             color: inherit;
@@ -284,7 +264,6 @@ if (isset($_GET['success'])) {
             float: right;
             cursor: pointer;
         }
-
         .close-btn:hover {
             color: #000;
         }
@@ -365,6 +344,7 @@ if (isset($_GET['success'])) {
                     <th>Nombre Del Equipo</th>
                     <th>Descripcion</th>
                     <th>Numero Control Lider</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -375,15 +355,77 @@ if (isset($_GET['success'])) {
                             <td><?php echo htmlspecialchars($equipo['nombre_equipo']); ?></td>
                             <td><?php echo htmlspecialchars($equipo['descripcion']); ?></td>
                             <td><?php echo htmlspecialchars($equipo['numero_control']); ?></td>
+                            <td>
+                                <!-- Botón de eliminar -->
+                                <form action="../controllers/teams-table-delete.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="codigo_equipo" value="<?php echo $equipo['codigo_equipo']; ?>">
+                                    <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">Eliminar</button>
+                                </form>
+                                <!-- Botón de integrantes -->
+                                <a href="#modalIntegrantes-<?php echo $equipo['codigo_equipo']; ?>" style="background-color: blue; color: white; border: none; padding: 5px 10px; cursor: pointer; text-decoration: none;">Integrantes</a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="4">No hay equipos registrados.</td>
+                        <td colspan="5">No hay equipos registrados.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         </table>
+
+        <!-- Modales para mostrar los integrantes -->
+        <?php if (!empty($equipos)): ?>
+            <?php foreach ($equipos as $equipo): ?>
+                <?php
+                // Obtener los integrantes del equipo actual
+                $codigoEquipo = $equipo['codigo_equipo'];
+                $sqlIntegrantes = "
+                    SELECT 
+                        integrante_equipo.codigo_equipo, 
+                        integrante_equipo.numero_control, 
+                        usuario.nombre, 
+                        usuario.apellido 
+                    FROM 
+                        integrante_equipo 
+                    INNER JOIN 
+                        usuario 
+                    ON 
+                        integrante_equipo.numero_control = usuario.numero_control
+                    WHERE integrante_equipo.codigo_equipo = ?
+                ";
+                $stmt = $conexion->prepare($sqlIntegrantes);
+                $stmt->bind_param("s", $codigoEquipo);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $integrantes = [];
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $integrantes[] = $row;
+                    }
+                }
+                $stmt->close();
+                ?>
+                <!-- Modal para este equipo -->
+                <div id="modalIntegrantes-<?php echo $codigoEquipo; ?>" class="modal">
+                    <div class="modal-content">
+                        <a href="#" class="close">&times;</a>
+                        <h2>Integrantes del Equipo: <?php echo htmlspecialchars($equipo['nombre_equipo']); ?></h2>
+                        <div id="listaIntegrantes">
+                            <?php if (!empty($integrantes)): ?>
+                                <ul>
+                                    <?php foreach ($integrantes as $integrante): ?>
+                                        <li><?php echo htmlspecialchars($integrante['nombre']) . " " . htmlspecialchars($integrante['apellido']); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php else: ?>
+                                <p>No hay integrantes en este equipo.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 
     <script>
